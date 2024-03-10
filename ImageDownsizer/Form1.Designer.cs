@@ -36,6 +36,7 @@
             this.btnSubmit = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.lblTime = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -116,11 +117,21 @@
             this.label3.TabIndex = 8;
             this.label3.Text = "Downsized Image";
             // 
+            // lblTime
+            // 
+            this.lblTime.AutoSize = true;
+            this.lblTime.Location = new System.Drawing.Point(531, 23);
+            this.lblTime.Name = "lblTime";
+            this.lblTime.Size = new System.Drawing.Size(39, 15);
+            this.lblTime.TabIndex = 9;
+            this.lblTime.Text = "Time: ";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lblTime);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.btnSubmit);
@@ -150,5 +161,6 @@
         private Button btnSubmit;
         private Label label2;
         private Label label3;
+        private Label lblTime;
     }
 }

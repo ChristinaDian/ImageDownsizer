@@ -1,15 +1,16 @@
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static System.Windows.Forms.AxHost;
 
 namespace ImageDownsizer
 {
     public partial class Form1 : Form
     {
         private Bitmap originalImage;
-        private Bitmap downscaledImage;
 
         public Form1()
         {
@@ -26,6 +27,7 @@ namespace ImageDownsizer
             OpenFileDialog fileDialog = new OpenFileDialog();
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
+
                 originalImage = new Bitmap(fileDialog.FileName);
                 pictureBox1.Image = originalImage;
             }
@@ -37,77 +39,100 @@ namespace ImageDownsizer
             stopwatch.Start();
 
             int downscaleFactor = (int)numericUpDown1.Value;
-            DownscaleMethod(downscaleFactor);
-            pictureBox2.Image = downscaledImage;
+
+            pictureBox2.Image = DownscaleMethod(downscaleFactor);
 
             stopwatch.Stop();
             lblTime.Text = $"Time without threads: {stopwatch.ElapsedMilliseconds} ms";
-
         }
-        private void DownscaleMethod(int downscaleFactor)
+
+        private byte[] CopyBitmapToArray(Bitmap bitmap)
+        {
+            // Lock the bitmap's bits. 
+            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bmpData = bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+            // Declare an array to hold the bytes of the bitmap.
+            int bytes = bmpData.Stride * bmpData.Height;
+            byte[] rgbValues = new byte[bytes];
+
+            // Copy the RGB values back to the bitmap
+            Marshal.Copy(bmpData.Scan0, rgbValues, 0, bytes);
+
+            // Unlock the bits.
+            bitmap.UnlockBits(bmpData);
+
+            return rgbValues;
+        }
+        private void SetBitmapFromArray(Bitmap bitmap, byte[] rgbValues)
+        {
+            // Lock the bitmap's bits.
+            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bmpData = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            // Copy the RGB values back to the bitmap
+            Marshal.Copy(rgbValues, 0, bmpData.Scan0, rgbValues.Length);
+
+            // Unlock the bits.
+            bitmap.UnlockBits(bmpData);
+        }
+
+        private void FindAverageColors(byte[] originalRgbValues, int originalWidth, int startX, int startY, int blockWidth, int blockHeight, out byte averagedR, out byte averagedG, out byte averagedB)
+        {
+            int sumR = 0, sumG = 0, sumB = 0;
+            int totalPixels = blockHeight*blockWidth;
+
+            for (int y = startY; y < startY + blockHeight; y++)
+            {
+                for (int x = startX; x < startX + blockWidth; x++)
+                {
+                    int index = (y * originalWidth + x) * 3; // Assuming 24 bits per pixel (3 bytes per pixel)
+                    sumB += originalRgbValues[index];
+                    sumG += originalRgbValues[index + 1];
+                    sumR += originalRgbValues[index + 2];
+                }
+            }
+
+            averagedR = (byte)(sumR / totalPixels);
+            averagedG = (byte)(sumG / totalPixels);
+            averagedB = (byte)(sumB / totalPixels);
+        }
+        private void DownscaleLines(byte[] originalRgbValues, byte[] downscaledRgbValues, int newWidth, int newHeight, int factorRatio)
+        {
+            for (int y = 0; y < newHeight; y++)
+            {
+                for (int x = 0; x < newWidth; x++)
+                {
+                    int originalX = x * factorRatio;
+                    int originalY = y * factorRatio;
+
+                    byte averagedR, averagedG, averagedB;
+                    FindAverageColors(originalRgbValues, originalImage.Width, originalX, originalY, originalImage.Width / newWidth, originalImage.Height / newHeight, out averagedR, out averagedG, out averagedB);
+
+                    int downscaledIndex = (y * newWidth + x) * 3;
+                    downscaledRgbValues[downscaledIndex] = averagedB;
+                    downscaledRgbValues[downscaledIndex + 1] = averagedG;
+                    downscaledRgbValues[downscaledIndex + 2] = averagedR;
+                }
+            }
+        }
+        private Bitmap DownscaleMethod(int downscaleFactor)
         {
             int newWidth = (int)(originalImage.Width * downscaleFactor / 100);
             int newHeight = (int)(originalImage.Height * downscaleFactor / 100);
             int factorRatio = (int)(originalImage.Width / newWidth);
 
-            downscaledImage = new Bitmap(newWidth, newHeight);
-
-            // Lock the bitmap's bits.  
-            Rectangle originalRect = new Rectangle(0, 0, originalImage.Width, originalImage.Height);
-            Rectangle downscaleRect = new Rectangle(0, 0, newWidth, newHeight);
-
-            BitmapData originalBmpData =
-                originalImage.LockBits(originalRect, ImageLockMode.ReadOnly,
-                originalImage.PixelFormat);
-
-            BitmapData downscaledBmpData =
-               downscaledImage.LockBits(downscaleRect, ImageLockMode.ReadWrite,
-               downscaledImage.PixelFormat);
-
-            // Get the address of the first line.
-            IntPtr ptrOriginal = originalBmpData.Scan0;
-            IntPtr ptrDownscaled = downscaledBmpData.Scan0;
+            Bitmap downscaledImage = new Bitmap(newWidth, newHeight);
 
             // Declare an array to hold the bytes of the bitmap.
-            int bytes = Math.Abs(originalBmpData.Stride) * originalImage.Height;
-            byte[] originalRgbValues = new byte[bytes];
-            byte[] downscaledRgbValues = new byte[Math.Abs(downscaledBmpData.Stride) * downscaledImage.Height];
+            byte[] originalRgbValues = CopyBitmapToArray(originalImage);
+            byte[] downscaledRgbValues = new byte[newWidth * newHeight * 3]; // 24 bits per pixel (3 bytes per pixel)
 
-            // Copy the RGB values into the array.
-            Marshal.Copy(ptrOriginal, originalRgbValues, 0, bytes);
+            DownscaleLines(originalRgbValues, downscaledRgbValues, newWidth, newHeight, factorRatio);
+            
+            SetBitmapFromArray(downscaledImage, downscaledRgbValues);
 
-            for (int y = 0; y < newHeight; y++)
-            {
-                for (int x = 0; x < newWidth; x++)
-                {
-                    // downscaledRgbValues[y*newWidth + x] = originalRgbValues[factorRatio*(y * newWidth + x)];
-                    int originalX = x * factorRatio;
-                    int originalY = y * factorRatio;
-
-                   
-                    int downscaledIndex = (y * downscaledBmpData.Stride) + (x * factorRatio);
-
-                    int sum = 0;
-                    for (int i = 0; i < factorRatio; i++)
-                    { 
-                        int originalIndex = (originalY+i) * originalBmpData.Stride + (originalX * factorRatio);
-                        sum += originalRgbValues[originalIndex+i];
-                    }
-                    byte average = (byte)(sum/factorRatio);
-
-                    for (int i = 0; i < factorRatio; i++)
-                    {
-                        downscaledRgbValues[downscaledIndex + i] = average;
-                    }
-                }
-            }
-
-            // Copy the RGB values back to the bitmap
-            Marshal.Copy(downscaledRgbValues, 0, ptrDownscaled, downscaledRgbValues.Length);
-
-            // Unlock the bits.
-            originalImage.UnlockBits(originalBmpData);
-            downscaledImage.UnlockBits(downscaledBmpData);
+            return downscaledImage;
         }
        
     }

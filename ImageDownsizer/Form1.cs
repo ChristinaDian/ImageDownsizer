@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -141,6 +142,7 @@ namespace ImageDownsizer
             }
             Bitmap downscaledImage = new Bitmap(newWidth, newHeight);
             SetBitmapFromArray(downscaledImage, downscaledRgbValues);
+            downscaledImage.Save("d:\\DownsizedImageWithThreads.jpeg", ImageFormat.Jpeg);
 
             return downscaledImage;
         }
@@ -155,6 +157,7 @@ namespace ImageDownsizer
 
             Bitmap downscaledImage = new Bitmap(newWidth, newHeight);
             SetBitmapFromArray(downscaledImage, downscaledRgbValues);
+            downscaledImage.Save("d:\\DownsizedImage.jpeg", ImageFormat.Jpeg);
 
             return downscaledImage;
         }

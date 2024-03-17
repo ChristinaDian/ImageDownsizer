@@ -1,7 +1,7 @@
 # ImageDosnsizer
 
-This is a WinForms application which down-sizes images. 
-The app lets users select an image using the standard open file dialog, enter a downscaling factor (real number), and produce a new down-scaled image.  
+This is a WinForms application that down-sizes images. 
+The app lets users select an image using the standard open file dialog, enter a downscaling factor (real number), and produce a new downscaled image.  
 It implements a downscaling algorithm in two ways: consequential and parallel, measures the performance with different image sizes, and reports the results.
 
 ## Details
@@ -10,7 +10,7 @@ The downscaling factor is a percentage of the original size.  The image aspect r
 
 ## Testing
 
-In this image you can see the measured AVERAGE time for downscaling when the factor is 50%. 
+In this image, you can see the measured AVERAGE time for downscaling when the factor is 50%. 
 ![AVERAGE TIME](src/AverageTimeDownscaling.png)
 
 The testing is made with: 
@@ -18,6 +18,6 @@ The testing is made with:
 
 ## Results
 
-As expected, the parallel method with threads performs better
-The AVERAGE TIME for downscaling is: 5895ms
-The AVERAGE TIME for donwscaling with THREADS is: 2600ms
+As expected, the parallel method with threads performs better.
+The AVERAGE TIME for downscaling is 5895ms.
+The AVERAGE TIME for downscaling with THREADS is 2600ms.

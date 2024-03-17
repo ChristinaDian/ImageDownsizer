@@ -42,6 +42,7 @@ namespace ImageDownsizer
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             int downscaleFactor = (int)this.downscaleFactor.Value;
+            long sumDownscalingTime = 0, sumDownscalingTimeWithThreads = 0;
 
 
             if (downscaleFactor > 0)
@@ -50,21 +51,23 @@ namespace ImageDownsizer
                 int newHeight = (int)(originalImage.Height * downscaleFactor / 100);
                 int factorRatio = (int)(originalImage.Width / newWidth);
                 int totalPixels = factorRatio * factorRatio;
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
 
-                pictureBoxDownsizedImage.Image = DownscaleMethod(newWidth, newHeight, factorRatio, totalPixels);
+                for (int i = 0; i < 10; i++) //Find average time for downscaling
+                {
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    pictureBoxDownsizedImage.Image = DownscaleMethod(newWidth, newHeight, factorRatio, totalPixels);
+                    stopwatch.Stop();
+                    sumDownscalingTime += stopwatch.ElapsedMilliseconds;
 
-                stopwatch.Stop();
-                lblTime.Text = $"Time without threads: {stopwatch.ElapsedMilliseconds} ms";
-
-                Stopwatch stopwatchWithThreads = new Stopwatch();
-                stopwatchWithThreads.Start();
-
-                pictureBoxDownsizedImage.Image = DownscaleMethodWithThreads(newWidth, newHeight, factorRatio, totalPixels);
-
-                stopwatchWithThreads.Stop();
-                lblTimeWithThreads.Text = $"Time with threads: {stopwatchWithThreads.ElapsedMilliseconds} ms";
+                    Stopwatch stopwatchWithThreads = new Stopwatch();
+                    stopwatchWithThreads.Start();
+                    pictureBoxDownsizedImage.Image = DownscaleMethodWithThreads(newWidth, newHeight, factorRatio, totalPixels);
+                    stopwatchWithThreads.Stop();
+                    sumDownscalingTimeWithThreads += stopwatchWithThreads.ElapsedMilliseconds;
+                }
+                lblTime.Text = $"Time without threads: {sumDownscalingTime / 10} ms";
+                lblTimeWithThreads.Text = $"Time with threads: {sumDownscalingTimeWithThreads / 10} ms";
             }
             else
             {

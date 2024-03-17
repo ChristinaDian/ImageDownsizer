@@ -29,18 +29,18 @@
         private void InitializeComponent()
         {
             this.btnOpenFileDialog = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxOriginalImage = new System.Windows.Forms.PictureBox();
+            this.pictureBoxDownsizedImage = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.downscaleFactor = new System.Windows.Forms.NumericUpDown();
             this.btnSubmit = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lblOriginalImage = new System.Windows.Forms.Label();
+            this.lblDownsizedImage = new System.Windows.Forms.Label();
             this.lblTime = new System.Windows.Forms.Label();
             this.lblTimeWithThreads = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginalImage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDownsizedImage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.downscaleFactor)).BeginInit();
             this.SuspendLayout();
             // 
             // btnOpenFileDialog
@@ -53,23 +53,23 @@
             this.btnOpenFileDialog.UseVisualStyleBackColor = true;
             this.btnOpenFileDialog.Click += new System.EventHandler(this.btnOpenFileDialog_Click);
             // 
-            // pictureBox1
+            // pictureBoxOriginalImage
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(12, 175);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(377, 263);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
+            this.pictureBoxOriginalImage.Location = new System.Drawing.Point(12, 175);
+            this.pictureBoxOriginalImage.Name = "pictureBoxOriginalImage";
+            this.pictureBoxOriginalImage.Size = new System.Drawing.Size(377, 263);
+            this.pictureBoxOriginalImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxOriginalImage.TabIndex = 1;
+            this.pictureBoxOriginalImage.TabStop = false;
             // 
-            // pictureBox2
+            // pictureBoxDownsizedImage
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(406, 175);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(382, 263);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox2.TabIndex = 2;
-            this.pictureBox2.TabStop = false;
+            this.pictureBoxDownsizedImage.Location = new System.Drawing.Point(406, 175);
+            this.pictureBoxDownsizedImage.Name = "pictureBoxDownsizedImage";
+            this.pictureBoxDownsizedImage.Size = new System.Drawing.Size(382, 263);
+            this.pictureBoxDownsizedImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxDownsizedImage.TabIndex = 2;
+            this.pictureBoxDownsizedImage.TabStop = false;
             // 
             // label1
             // 
@@ -80,13 +80,13 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "Select down-scaling factor in %";
             // 
-            // numericUpDown1
+            // downscaleFactor
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(335, 75);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(120, 23);
-            this.numericUpDown1.TabIndex = 5;
-            this.numericUpDown1.Tag = "";
+            this.downscaleFactor.Location = new System.Drawing.Point(335, 75);
+            this.downscaleFactor.Name = "downscaleFactor";
+            this.downscaleFactor.Size = new System.Drawing.Size(120, 23);
+            this.downscaleFactor.TabIndex = 5;
+            this.downscaleFactor.Tag = "";
             // 
             // btnSubmit
             // 
@@ -98,25 +98,25 @@
             this.btnSubmit.UseVisualStyleBackColor = true;
             this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
             // 
-            // label2
+            // lblOriginalImage
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(132, 151);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(124, 21);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Original Image";
+            this.lblOriginalImage.AutoSize = true;
+            this.lblOriginalImage.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblOriginalImage.Location = new System.Drawing.Point(132, 151);
+            this.lblOriginalImage.Name = "lblOriginalImage";
+            this.lblOriginalImage.Size = new System.Drawing.Size(124, 21);
+            this.lblOriginalImage.TabIndex = 7;
+            this.lblOriginalImage.Text = "Original Image";
             // 
-            // label3
+            // lblDownsizedImage
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label3.Location = new System.Drawing.Point(531, 151);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(146, 21);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Downsized Image";
+            this.lblDownsizedImage.AutoSize = true;
+            this.lblDownsizedImage.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblDownsizedImage.Location = new System.Drawing.Point(531, 151);
+            this.lblDownsizedImage.Name = "lblDownsizedImage";
+            this.lblDownsizedImage.Size = new System.Drawing.Size(146, 21);
+            this.lblDownsizedImage.TabIndex = 8;
+            this.lblDownsizedImage.Text = "Downsized Image";
             // 
             // lblTime
             // 
@@ -143,20 +143,20 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.lblTimeWithThreads);
             this.Controls.Add(this.lblTime);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.lblDownsizedImage);
+            this.Controls.Add(this.lblOriginalImage);
             this.Controls.Add(this.btnSubmit);
-            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.downscaleFactor);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.pictureBoxDownsizedImage);
+            this.Controls.Add(this.pictureBoxOriginalImage);
             this.Controls.Add(this.btnOpenFileDialog);
             this.Name = "Form1";
             this.Text = "Image Downsizer";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginalImage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDownsizedImage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.downscaleFactor)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -165,13 +165,13 @@
         #endregion
 
         private Button btnOpenFileDialog;
-        private PictureBox pictureBox1;
-        private PictureBox pictureBox2;
+        private PictureBox pictureBoxOriginalImage;
+        private PictureBox pictureBoxDownsizedImage;
         private Label label1;
-        private NumericUpDown numericUpDown1;
+        private NumericUpDown downscaleFactor;
         private Button btnSubmit;
-        private Label label2;
-        private Label label3;
+        private Label lblOriginalImage;
+        private Label lblDownsizedImage;
         private Label lblTime;
         private Label lblTimeWithThreads;
     }

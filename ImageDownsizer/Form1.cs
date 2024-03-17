@@ -11,7 +11,6 @@ namespace ImageDownsizer
     public partial class Form1 : Form
     {
         private Bitmap originalImage;
-        private object lockObj = new object();
 
         public Form1()
         {
@@ -33,7 +32,7 @@ namespace ImageDownsizer
                 Thread thread = new Thread(() =>
                 {
                     originalImage = new Bitmap(fileDialog.FileName);
-                    pictureBox1.Image = originalImage;
+                    pictureBoxOriginalImage.Image = originalImage;
                 });
                 thread.Start();
             }
@@ -42,7 +41,7 @@ namespace ImageDownsizer
 
         private void btnSubmit_Click(object sender, EventArgs e)
         {
-            int downscaleFactor = (int)numericUpDown1.Value;
+            int downscaleFactor = (int)this.downscaleFactor.Value;
             int newWidth = (int)(originalImage.Width * downscaleFactor / 100);
             int newHeight = (int)(originalImage.Height * downscaleFactor / 100);
             int factorRatio = (int)(originalImage.Width / newWidth);
@@ -53,16 +52,15 @@ namespace ImageDownsizer
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                pictureBox2.Image = DownscaleMethod(newWidth, newHeight, factorRatio, totalPixels);
+                pictureBoxDownsizedImage.Image = DownscaleMethod(newWidth, newHeight, factorRatio, totalPixels);
 
                 stopwatch.Stop();
-
                 lblTime.Text = $"Time without threads: {stopwatch.ElapsedMilliseconds} ms";
 
                 Stopwatch stopwatchWithThreads = new Stopwatch();
                 stopwatchWithThreads.Start();
 
-                pictureBox2.Image = DownscaleMethodWithThreads(newWidth, newHeight, factorRatio, totalPixels);
+                pictureBoxDownsizedImage.Image = DownscaleMethodWithThreads(newWidth, newHeight, factorRatio, totalPixels);
 
                 stopwatchWithThreads.Stop();
                 lblTimeWithThreads.Text = $"Time with threads: {stopwatchWithThreads.ElapsedMilliseconds} ms";
@@ -71,37 +69,6 @@ namespace ImageDownsizer
             {
                 MessageBox.Show("Please enter a downscale factor greater than 0.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-        }
-
-        private byte[] CopyBitmapToArray(Bitmap bitmap)
-        {
-            // Lock the bitmap's bits. 
-            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-            BitmapData bmpData = bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-
-            // Declare an array to hold the bytes of the bitmap.
-            int bytes = bmpData.Stride * bmpData.Height;
-            byte[] rgbValues = new byte[bytes];
-
-            // Copy the RGB values back to the bitmap
-            Marshal.Copy(bmpData.Scan0, rgbValues, 0, bytes);
-
-            // Unlock the bits.
-            bitmap.UnlockBits(bmpData);
-
-            return rgbValues;
-        }
-        private void SetBitmapFromArray(Bitmap bitmap, byte[] rgbValues)
-        {
-            // Lock the bitmap's bits.
-            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-            BitmapData bmpData = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-
-            // Copy the RGB values back to the bitmap
-            Marshal.Copy(rgbValues, 0, bmpData.Scan0, rgbValues.Length);
-
-            // Unlock the bits.
-            bitmap.UnlockBits(bmpData);
         }
 
         private void DownscaleLines(byte[] originalRgbValues, byte[] downscaledRgbValues, int newWidth, int newHeight, int factorRatio, int yStart, int yEnd, int totalPixels)
@@ -147,8 +114,8 @@ namespace ImageDownsizer
             byte[] downscaledRgbValues = new byte[newWidth * newHeight * 3]; // 24 bits per pixel (3 bytes per pixel)
 
             int threadCount = Environment.ProcessorCount; //The number of logical CPUs we have - 8
-            int linesPerThread = (int)Math.Ceiling((double)newWidth / threadCount);          
-           
+            int linesPerThread = (int)Math.Ceiling((double)newWidth / threadCount);
+
             List<Thread> threads = new List<Thread>();
             for (int i = 0; i < threadCount; i++)
             {
@@ -174,6 +141,7 @@ namespace ImageDownsizer
 
             return downscaledImage;
         }
+
         private Bitmap DownscaleMethod(int newWidth, int newHeight, int factorRatio, int totalPixels)
         {
             // Declare an array to hold the bytes of the bitmap.
@@ -186,6 +154,37 @@ namespace ImageDownsizer
             SetBitmapFromArray(downscaledImage, downscaledRgbValues);
 
             return downscaledImage;
+        }
+        private byte[] CopyBitmapToArray(Bitmap bitmap)
+        {
+            // Lock the bitmap's bits. 
+            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bmpData = bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+            // Declare an array to hold the bytes of the bitmap.
+            int bytes = bmpData.Stride * bmpData.Height;
+            byte[] rgbValues = new byte[bytes];
+
+            // Copy the RGB values back to the bitmap
+            Marshal.Copy(bmpData.Scan0, rgbValues, 0, bytes);
+
+            // Unlock the bits.
+            bitmap.UnlockBits(bmpData);
+
+            return rgbValues;
+        }
+
+        private void SetBitmapFromArray(Bitmap bitmap, byte[] rgbValues)
+        {
+            // Lock the bitmap's bits.
+            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bmpData = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            // Copy the RGB values back to the bitmap
+            Marshal.Copy(rgbValues, 0, bmpData.Scan0, rgbValues.Length);
+
+            // Unlock the bits.
+            bitmap.UnlockBits(bmpData);
         }
     }
 }

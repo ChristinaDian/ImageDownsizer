@@ -1,6 +1,9 @@
-# IMAGE DOWNSIZER
+# Foobar
 
-## Overview
+This is a WinForms application which down-sizes images. 
+The app lets users select an image using the standard open file dialog, enter a downscaling factor (real number), and produce a new down-scaled image.  
+
+## Installation
 
 This is a WinForms application which down-sizes images. 
 The app lets users select an image using the standard open file dialog, enter a downscaling factor (real number), and produce a new down-scaled image.  

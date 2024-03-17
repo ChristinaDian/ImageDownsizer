@@ -37,6 +37,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.lblTime = new System.Windows.Forms.Label();
+            this.lblTimeWithThreads = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -120,17 +121,27 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(531, 23);
+            this.lblTime.Location = new System.Drawing.Point(531, 9);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(39, 15);
             this.lblTime.TabIndex = 9;
             this.lblTime.Text = "Time: ";
+            // 
+            // lblTimeWithThreads
+            // 
+            this.lblTimeWithThreads.AutoSize = true;
+            this.lblTimeWithThreads.Location = new System.Drawing.Point(531, 33);
+            this.lblTimeWithThreads.Name = "lblTimeWithThreads";
+            this.lblTimeWithThreads.Size = new System.Drawing.Size(107, 15);
+            this.lblTimeWithThreads.TabIndex = 10;
+            this.lblTimeWithThreads.Text = "Time with threads: ";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lblTimeWithThreads);
             this.Controls.Add(this.lblTime);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -162,5 +173,6 @@
         private Label label2;
         private Label label3;
         private Label lblTime;
+        private Label lblTimeWithThreads;
     }
 }

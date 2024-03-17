@@ -42,13 +42,14 @@ namespace ImageDownsizer
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             int downscaleFactor = (int)this.downscaleFactor.Value;
-            int newWidth = (int)(originalImage.Width * downscaleFactor / 100);
-            int newHeight = (int)(originalImage.Height * downscaleFactor / 100);
-            int factorRatio = (int)(originalImage.Width / newWidth);
-            int totalPixels = factorRatio * factorRatio;
+
 
             if (downscaleFactor > 0)
             {
+                int newWidth = (int)(originalImage.Width * downscaleFactor / 100);
+                int newHeight = (int)(originalImage.Height * downscaleFactor / 100);
+                int factorRatio = (int)(originalImage.Width / newWidth);
+                int totalPixels = factorRatio * factorRatio;
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
 
@@ -71,8 +72,9 @@ namespace ImageDownsizer
             }
         }
 
-        private void DownscaleLines(byte[] originalRgbValues, byte[] downscaledRgbValues, int newWidth, int newHeight, int factorRatio, int yStart, int yEnd, int totalPixels)
+        private void DownscaleLines(byte[] originalRgbValues, byte[] downscaledRgbValues, int newWidth, int factorRatio, int yStart, int yEnd)
         {
+            int totalPixels = factorRatio * factorRatio;
             for (int y = yStart; y < yEnd; y++)
             {
                 for (int x = 0; x < newWidth; x++)
@@ -81,13 +83,13 @@ namespace ImageDownsizer
                     int originalY = y * factorRatio;
 
                     int sumR = 0, sumG = 0, sumB = 0;
-
-                    for (int dy = 0; dy < factorRatio; dy++)
+                    //Find Average colors
+                    for (int y2 = 0; y2 < factorRatio; y2++)
                     {
-                        for (int dx = 0; dx < factorRatio; dx++)
+                        for (int x2 = 0; x2 < factorRatio; x2++)
                         {
-                            int pixelX = originalX + dx;
-                            int pixelY = originalY + dy;
+                            int pixelX = originalX + x2;
+                            int pixelY = originalY + y2;
 
                             int index = (pixelY * newWidth * factorRatio + pixelX) * 3; // Assuming 24 bits per pixel (3 bytes per pixel)                                                     
                             sumB += originalRgbValues[index];
@@ -124,18 +126,16 @@ namespace ImageDownsizer
 
                 Thread thread = new Thread(() =>
                 {
-                    DownscaleLines(originalRgbValues, downscaledRgbValues, newWidth, newHeight, factorRatio, yStart, yEnd, totalPixels);
+                    DownscaleLines(originalRgbValues, downscaledRgbValues, newWidth, factorRatio, yStart, yEnd);
                 });
                 threads.Add(thread);
                 thread.Start();
             }
-
             //Now wait for all to finish.
             foreach (Thread t in threads)
             {
                 t.Join();
             }
-
             Bitmap downscaledImage = new Bitmap(newWidth, newHeight);
             SetBitmapFromArray(downscaledImage, downscaledRgbValues);
 
@@ -148,13 +148,14 @@ namespace ImageDownsizer
             byte[] originalRgbValues = CopyBitmapToArray(originalImage);
             byte[] downscaledRgbValues = new byte[newWidth * newHeight * 3]; // 24 bits per pixel (3 bytes per pixel)
 
-            DownscaleLines(originalRgbValues, downscaledRgbValues, newWidth, newHeight, factorRatio, 0, newHeight, totalPixels);
+            DownscaleLines(originalRgbValues, downscaledRgbValues, newWidth, factorRatio, 0, newHeight);
 
             Bitmap downscaledImage = new Bitmap(newWidth, newHeight);
             SetBitmapFromArray(downscaledImage, downscaledRgbValues);
 
             return downscaledImage;
         }
+
         private byte[] CopyBitmapToArray(Bitmap bitmap)
         {
             // Lock the bitmap's bits. 

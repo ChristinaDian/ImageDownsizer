@@ -11,10 +11,10 @@ The downscaling factor is a percentage of the original size.  The image aspect r
 ## Testing
 
 In this image, you can see the measured AVERAGE time for downscaling when the factor is 50%. 
-![AVERAGE TIME](src/AverageTimeDownscaling.png)
+![AVERAGE TIME](images/AverageTimeDownscaling.png)
 
 The testing is made with: 
-![AG1121.jpg](src/AG1121.jpg)
+![AG1121.jpg](images/AG1121.jpg)
 
 ## Results
 
